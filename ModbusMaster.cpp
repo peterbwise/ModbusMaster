@@ -760,7 +760,7 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
   // transmit request
   UCSR0A=UCSR0A |(1 << TXC0);  
   Serial.flush();
-  digitalWrite(3, HIGH);
+  digitalWrite(6, HIGH);
   
   for (i = 0; i < u8ModbusADUSize; i++)
   {
@@ -772,7 +772,7 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
   }
   
   while (!(UCSR0A & (1 << TXC0)));
-  digitalWrite(3, LOW);
+  digitalWrite(6, LOW);
   // --------------------------------------
   // note that pin 3 is hard coded in.  I hope to change this later so that it will reference the Mode Control pin.
   // this is the pin that enables transmit and receive modes
