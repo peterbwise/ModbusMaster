@@ -8,7 +8,8 @@ Arduino library for communicating with Modbus slaves over RS232/485 (via RTU pro
   over RS232/485 (via RTU protocol).
   
   This is your own (peter's copy of Modbus Master)
-      I have added code to this .cpp file so that when used in Arduino IDE, it will be compatible with the MAX485
+      I have added code to this .cpp file so that when used in Arduino IDE, it will be compatible with the MAX485.  
+      Look below line 758.
   
   This file is part of ModbusMaster.
   
@@ -755,7 +756,12 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
   // flush receive buffer before transmitting request
   while (MBSerial->read() != -1);
 
+//---------------------edited code for MAX485----------------------------
   // transmit request
+  UCSR0A=UCSR0A |(1 << TXC0);  
+  Serial.flush();
+  digitalWrite(3, HIGH);
+  
   for (i = 0; i < u8ModbusADUSize; i++)
   {
 #if defined(ARDUINO) && ARDUINO >= 100
@@ -764,6 +770,13 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
     MBSerial->print(u8ModbusADU[i], BYTE);
 #endif
   }
+  
+  while (!(UCSR0A & (1 << TXC0)));
+  digitalWrite(3, LOW);
+  // --------------------------------------
+  // note that pin 3 is hard coded in.  I hope to change this later so that it will reference the Mode Control pin.
+  // this is the pin that enables transmit and receive modes
+  // this bit of added code is to get the timing right for flipping the modes on and off.
   
   u8ModbusADUSize = 0;
   MBSerial->flush();    // flush transmit buffer
